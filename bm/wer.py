@@ -104,8 +104,10 @@ def get_wer(
         probas_vocab.scatter_add_(0, indices, probas)
 
         # Extract Top k
-        _, bests = probas.topk(solver.args.test.wer_topx)
-        _, bests_vocab = probas_vocab.topk(solver.args.test.wer_topx)
+        sample_topk = min(solver.args.test.wer_topx, probas.numel())
+        vocab_topk = min(solver.args.test.wer_topx, probas_vocab.numel())
+        _, bests = probas.topk(sample_topk)
+        _, bests_vocab = probas_vocab.topk(vocab_topk)
 
         # Count correct
         correct += (negative_hashes[bests] == word_hash).any().item()

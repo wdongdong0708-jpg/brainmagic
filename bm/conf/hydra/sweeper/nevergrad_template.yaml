@@ -1,63 +1,91 @@
 # @package hydra.sweeper
 # _target_: hydra_plugins.hydra_nevergrad_sweeper.core.NevergradSweeper
 #
-# README
-# This template should be copied to nevergrad.yaml in the same folder,
-# and updated as you wish
+# Nevergrad 超参搜索模板。
+# 使用时复制为同目录下的 nevergrad.yaml，再按需要修改搜索空间和预算。
+
 optim:
-  optimizer: NGOpt
-  budget: 200
-  num_workers: 20
-  noisy: false
-  maximize: true
-  seed: null
+  optimizer: NGOpt                  # Nevergrad 使用的优化器。
+  budget: 200                       # 总共尝试多少组超参数。
+  num_workers: 20                   # 并行 worker 数。
+  noisy: false                      # 目标函数是否含明显噪声。
+  maximize: true                    # true 表示指标越大越好；false 表示越小越好。
+  seed: null                        # Nevergrad 搜索随机种子；null 表示不固定。
+
 parametrization:
+  # 优化器学习率搜索范围。
   optim.lr:
     init: 2e-4
     lower: 1e-5
     upper: 1e-2
+
+  # 在这些损失函数之间做离散选择。
   optim.loss:
     - mse
     - l1
+
+  # 任务域设置搜索项；是否仍有效取决于当前代码路径。
   task.domain:
     - Temporal
     - FreeSpectral
+
+  # ConvRNN 的 MEG 分支隐藏维度。
   convrnn.hidden.meg:
     lower: 512
     upper: 1024
     integer: true
+
+  # ConvRNN 的刺激特征分支隐藏维度。
   convrnn.hidden.features:
     lower: 4
     upper: 12
     integer: true
+
+  # 可选搜索项示例：取消注释后可让 Nevergrad 同时搜索 GLU 开关。
   # convrnn.glu:
   #   - false
   #   - true
+
+  # ConvRNN 深度搜索范围。
   convrnn.depth:
     lower: 1
     upper: 3
     integer: true
+
+  # 可选搜索项示例：卷积核大小。
   # convrnn.kernel_size:
   #   lower: 3
   #   upper: 5
   #   integer: true
+
+  # 通道增长倍率搜索范围。
   convrnn.growth:
     lower: 1
     upper: 2
+
+  # 可选搜索项示例：subject embedding 维度。
   # convrnn.subject_dim:
   #   lower: 8
   #   upper: 24
   #   integer: true
-  convrnn.lstm:  # number of lstm layers
+
+  # LSTM 层数搜索范围。
+  convrnn.lstm:
     lower: 1
     upper: 3
     integer: true
+
+  # 可选搜索项示例：激活函数负半轴斜率。
   # convrnn.relu_leakiness:
   #   - 0.0
   #   - 0.1
+
+  # 可选搜索项示例：卷积 dropout。
   # convrnn.conv_dropout:
   #   - 0.0
   #   - 0.1
+
+  # 可选搜索项示例：LSTM dropout。
   # convrnn.lstm_dropout:
   #   - 0.0
   #   - 0.1

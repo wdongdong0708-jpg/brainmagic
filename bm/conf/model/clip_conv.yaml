@@ -1,38 +1,36 @@
 # @package _global_
 
-num_workers: 5
+# 论文主线的 CLIP 对比学习卷积模型配置。
+num_workers: 1                       # DataLoader worker 数；Windows/本机缓存训练建议保持较小。
 
-model_name: simpleconv
+model_name: simpleconv               # 使用 SimpleConv 作为脑信号编码器。
 simpleconv:
   hidden:
-    meg: 320
-  batch_norm: true
-  depth: 10
-  dilation_period: 5
-  kernel_size: 3
-  skip: true
-  subject_layers: true
-  subject_dim: 0
-  complex_out: true
-  glu: 2
-  glu_context: 1
-  merger: true
-  initial_linear: 270
-  gelu: true
-  merger_pos_dim: 2048
+    meg: 320                         # MEG 输入分支隐藏通道数。
+  batch_norm: true                   # 卷积块中启用 batch normalization。
+  depth: 10                          # 残差卷积块数量。
+  dilation_period: 5                 # dilation 每 5 层循环一次。
+  kernel_size: 3                     # 卷积核大小。
+  skip: true                         # 启用残差/跳连结构。
+  subject_layers: true               # 为不同 subject 使用可学习的 subject-specific 层。
+  subject_dim: 0                     # 不额外使用 subject embedding 维度。
+  complex_out: true                  # 输出复数形式的表征，供 CLIP loss 使用。
+  glu: 2                             # 启用 GLU 门控卷积。
+  glu_context: 1                     # GLU 上下文大小。
+  merger: true                       # 启用传感器位置 merger，适配不同通道布局。
+  initial_linear: 270                # 输入端先投影到 270 维。
+  gelu: true                         # 使用 GELU 激活。
+  merger_pos_dim: 2048               # 传感器位置编码维度。
 
 optim:
-  loss: clip
-  epochs: 200
-  max_batches: 1200
-  batch_size: 256
+  loss: clip                         # 使用对比学习损失。
+  epochs: 200                        # 默认训练 200 个 epoch。
+  max_batches: 1200                  # 每个 epoch 最多 1200 个 batch。
+  batch_size: 128                    # 默认 batch size；单卡显存不足时需要调小。
 
 norm:
-  clip: true
+  clip: true                         # 归一化后超阈值样本采用裁剪而不是丢弃。
 
 task:
-  type: decode
-  # Moves the MEG signal to the 'past' by given ms value. This allows training
-  # causal models with better alignment between brain signals and the presented
-  # features.
-  offset_meg_ms: 150
+  type: decode                       # 从脑信号解码刺激音频表征。
+  offset_meg_ms: 150                 # 将 MEG 相对刺激平移 150ms，补偿脑反应延迟。

@@ -1,11 +1,13 @@
 # @package hydra.launcher
+
+# Hydra submitit 的 SLURM 启动器配置；只在集群提交任务时使用。
 _target_: hydra_plugins.hydra_submitit_launcher.submitit_launcher.SlurmLauncher
-submitit_folder: ${hydra.sweep.dir}/.submitit/%j
-timeout_min: 1000
-cpus_per_task: 10
-gpus_per_node: 1  # ddp not currently supported
-mem_gb: 200
-name: ${hydra.job.name}
-partition: learnfair
-comment: null
-constraint: null
+submitit_folder: ${hydra.sweep.dir}/.submitit/%j  # submitit 生成的作业脚本和日志目录。
+timeout_min: 1000                  # 单个作业最长运行时间，单位分钟。
+cpus_per_task: 10                  # 每个任务申请的 CPU 核数。
+gpus_per_node: 1                   # 每个节点申请的 GPU 数；当前配置不启用 DDP。
+mem_gb: 200                        # 每个任务申请的内存，单位 GB。
+name: ${hydra.job.name}            # SLURM 作业名。
+partition: learnfair               # SLURM 分区名，需要按集群实际情况修改。
+comment: null                      # SLURM comment 字段；没有要求时保持 null。
+constraint: null                   # 节点约束，例如 GPU 型号；没有要求时保持 null。

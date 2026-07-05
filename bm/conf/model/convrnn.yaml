@@ -1,11 +1,12 @@
 # @package _global_
 
+# ConvRNN 编码任务模板：用刺激特征和脑信号前缀预测后续脑信号。
 model_name: convrnn
 convrnn:
   hidden:
-    meg: 512
-    features: 12
+    meg: 512                         # MEG 分支隐藏通道数。
+    features: 12                     # 刺激特征分支隐藏通道数。
 
 task:
-  type: encode
-  loss: l1
+  type: encode                       # encode 表示从刺激表征预测脑信号。
+  loss: l1                           # 该字段保留旧配置含义；实际损失通常由 optim.loss 控制。

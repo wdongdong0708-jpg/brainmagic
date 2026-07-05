@@ -1,16 +1,17 @@
 # @package _global_
 
+# DeepMel 特征模型：通常用于把 Mel 频谱进一步映射到更高层的音频表征空间。
 feature_model_name: deep_mel
 feature_model_params:
-  n_hidden_channels: 320
-  n_hidden_layers: 10
-  n_out_channels: 768
-  kernel: 3
-  stride: 1
-  dilation_growth: 2
-  dilation_period: 5
-  batch_norm: True
-  activation_on_last: False
-  skip: True
-  glu_context: 1
-  glu: 2
+  n_hidden_channels: 320             # 隐藏层通道数。
+  n_hidden_layers: 10                # 隐藏层数量。
+  n_out_channels: 768                # 输出通道数。
+  kernel: 3                          # 卷积核大小。
+  stride: 1                          # 卷积步幅。
+  dilation_growth: 2                 # dilation 增长倍率。
+  dilation_period: 5                 # dilation 周期。
+  batch_norm: True                   # 是否使用 batch normalization。
+  activation_on_last: False          # 最后一层是否也加激活函数。
+  skip: True                         # 是否使用 skip connection。
+  glu_context: 1                     # GLU 上下文大小。
+  glu: 2                             # GLU 层数量。

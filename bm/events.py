@@ -27,6 +27,11 @@ from dora import to_absolute_path
 
 from . import utils
 
+try:
+    import soundfile as sf
+except ImportError:
+    sf = None
+
 
 @dataclass
 class Event:
@@ -129,8 +134,18 @@ class Sound(Event):
             actual_duration = self.duration
         else:
             assert Path(self.filepath).exists(), f'{self.filepath} does not exist.'
-            info = torchaudio.info(self.filepath)
-            actual_duration = float(info.num_frames / info.sample_rate) - self.offset
+            if hasattr(torchaudio, "info"):
+                info = torchaudio.info(self.filepath)
+                num_frames = info.num_frames
+                sample_rate = info.sample_rate
+            elif sf is not None:
+                info = sf.info(self.filepath)
+                num_frames = info.frames
+                sample_rate = info.samplerate
+            else:
+                wav, sample_rate = torchaudio.load(self.filepath)
+                num_frames = wav.shape[-1]
+            actual_duration = float(num_frames / sample_rate) - self.offset
             if self.duration is None or self.duration == 0:
                 self.duration = actual_duration
             else:

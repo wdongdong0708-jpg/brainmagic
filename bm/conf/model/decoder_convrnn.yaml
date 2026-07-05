@@ -1,17 +1,18 @@
 # @package _global_
 
+# ConvRNN 解码模板：用脑信号预测离散/连续刺激特征。
 model_name: convrnn
 convrnn:
   hidden:
-    meg: 512
-  bidirectional_lstm: true
+    meg: 512                         # MEG 输入分支隐藏通道数。
+  bidirectional_lstm: true           # 使用双向 LSTM，提高非因果解码能力。
 
 dset:
   features:
-    - WordSegment
+    - WordSegment                    # 目标特征：词片段/词级别标签。
 
 optim:
-  loss: regression_classification
+  loss: regression_classification    # 同时处理回归和分类特征的混合损失。
 
 task:
-  type: decode
+  type: decode                       # decode 表示从脑信号预测刺激表征。

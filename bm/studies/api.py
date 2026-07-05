@@ -373,7 +373,7 @@ def list_selections() -> tp.List[tp.Tuple[tp.Type[Recording], tp.Dict[str, tp.An
     """
     fp = Path(bm.__file__).parent / "conf" / "selections" / "selections_definitions.yaml"
     assert fp.exists(), f"Unknown file {fp}"
-    with fp.open() as f:
+    with fp.open(encoding="utf-8") as f:
         content = yaml.safe_load(f)
     out = []
     for params in content.values():

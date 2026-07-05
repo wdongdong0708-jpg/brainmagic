@@ -40,8 +40,9 @@ class Env:
         # Hijacking this part of the code as it is one of the first
         # to be executed, so a great place to set the start method.
         try:
-            multiprocessing.set_start_method('fork')
-        except RuntimeError:
+            if 'fork' in multiprocessing.get_all_start_methods():
+                multiprocessing.set_start_method('fork')
+        except (RuntimeError, ValueError):
             logger.warning("Could not set start method, cache might not work properly.")
 
     @staticmethod
@@ -64,7 +65,7 @@ class Env:
         """Fills the study paths with their default value in study_paths.yaml"""
         fp = Path(__file__).parent / "conf" / "study_paths" / "study_paths.yaml"
         assert fp.exists()
-        with fp.open() as f:
+        with fp.open(encoding="utf-8") as f:
             content = yaml.safe_load(f)
         logger.debug(content)
         study_paths = cls._get_host_study_paths(content)

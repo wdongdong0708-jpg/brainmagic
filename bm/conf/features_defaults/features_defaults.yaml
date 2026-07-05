@@ -1,30 +1,30 @@
 # @package _global_
 
 dset:
-  # Set with specific params to pass to each feature calculation
+  # 各刺激特征提取器的默认参数；只有 dset.features 中启用的特征才会使用对应配置。
   features_params:
     MelSpectrum:
-      n_fft: 512
-      n_mels: 120
-      normalized: true
-      use_log_scale: true
-      log_scale_eps: 1e-5
+      n_fft: 512                    # Mel 频谱的 FFT 点数。
+      n_mels: 120                   # Mel 滤波器数量，即输出频带数。
+      normalized: true              # 是否对频谱做归一化。
+      use_log_scale: true           # 是否取 log 压缩动态范围。
+      log_scale_eps: 1e-5           # 取 log 时加上的小常数，避免 log(0)。
     Pitch:
-      min_f0: 100
-      max_f0: 350
+      min_f0: 100                   # 基频搜索下限，单位 Hz。
+      max_f0: 350                   # 基频搜索上限，单位 Hz。
     WordHash:
-      buckets: 100000
+      buckets: 100000               # 单词哈希桶数量；越大越少冲突，但维度更大。
     XlmEmbedding:
-      contextual: false
+      contextual: false             # 是否使用上下文相关的词向量。
     WordEmbedding:
-      lang: "auto" # 'nl' for dutch, 'en' for english, see https://spacy.io/usage/models for other languages
+      lang: "auto"                  # spaCy 语言模型；auto 表示按事件语言自动选择。
     WordEmbeddingSmall:
-      lang: "auto"
+      lang: "auto"                  # 小型词向量的语言模型选择。
     PartOfSpeech:
-      lang: "auto"
+      lang: "auto"                  # 词性标注使用的语言模型。
     Wav2VecTransformer:
-      layers: [14, 15, 16, 17, 18]
-      device: cpu
-      random: false
+      layers: [14, 15, 16, 17, 18]  # 取 Wav2Vec 2.0 的哪些 transformer 层作为音频表征。
+      device: cpu                   # 提取 Wav2Vec 特征的设备；缓存已有时通常不再重算。
+      random: false                 # true 时使用随机初始化模型，通常只做基线实验。
     Wav2VecChunk:
-      device: cpu
+      device: cpu                   # 分块版 Wav2Vec 特征提取设备。

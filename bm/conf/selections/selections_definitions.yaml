@@ -1,20 +1,29 @@
+# selection 是训练命令里 dset.selections 使用的名字。
+# 每个 selection 会映射到一个真实 study，并可附加 modality 或事件过滤条件。
+
 audio_mous:
-  study: schoffelen2019
-  modality: audio
-  events_filter:
+  study: schoffelen2019              # Schoffelen2019 数据集的听觉任务子集。
+  modality: audio                    # 只选择音频刺激。
+  events_filter:                     # 不额外过滤事件。
+
 audio_mous_wl:
-  study: schoffelen2019
-  modality: audio
-  events_filter: condition == "word_list"
+  study: schoffelen2019              # Schoffelen2019 听觉任务中的 word_list 条件。
+  modality: audio                    # 只选择音频刺激。
+  events_filter: condition == "word_list"  # 只保留 condition 为 word_list 的事件。
+
 visual_mous:
-  study: schoffelen2019
-  modality: visual
-  events_filter:
+  study: schoffelen2019              # Schoffelen2019 数据集的视觉任务子集。
+  modality: visual                   # 只选择视觉刺激。
+  events_filter:                     # 不额外过滤事件。
+
 gwilliams2022:
-  study: gwilliams2022
+  study: gwilliams2022               # Gwilliams2022 MEG 听故事数据集。
+
 broderick2019:
-  study: broderick2019
+  study: broderick2019               # Broderick2019 EEG 语音理解数据集。
+
 fake:
-  study: fake
+  study: fake                        # 单元测试/调试用的伪数据集。
+
 brennan2019:
-  study: brennan2019
+  study: brennan2019                 # Brennan2019 EEG 自然语言刺激数据集。

@@ -15,7 +15,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from .cache import Cache
+from .cache import Cache, torch_load
 from .dataset import SegmentBatch
 from .losses import ClipLoss, FeatureDecodingLoss, L1Loss, L2Loss
 from .metrics import ClassificationAcc, L2Reg, OnlineCorrelation
@@ -110,7 +110,7 @@ class Solver(flashy.BaseSolver):
         elif self.args.continue_sig:
             path = self.folder.parent / self.args.continue_sig / self.checkpoint_path.name
             assert path.exists(), "Could not find checkpoint " + str(path)
-            state = torch.load(path, 'cpu')
+            state = torch_load(path, map_location='cpu')
             if self.args.continue_best:
                 self.all_models.load_state_dict(state['best_state'])
             else:

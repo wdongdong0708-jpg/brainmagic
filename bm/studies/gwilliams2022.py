@@ -50,6 +50,33 @@ class Gwilliams2022Recording(api.Recording):
     description = "21 subjects listened to 4 stories, in 2 x 1h identical sessions."
 
     @classmethod
+    def _iter_cached(cls) -> tp.Iterator["Gwilliams2022Recording"]:
+        from .. import env
+
+        if env.cache is None:
+            return
+        cache_folder = env.cache / "studies" / cls.study_name()
+        if not cache_folder.exists():
+            return
+        for folder in sorted(cache_folder.iterdir()):
+            if not folder.is_dir():
+                continue
+            parts = folder.name.split("_")
+            if len(parts) != 3:
+                continue
+            subject_uid, session_part, story_part = parts
+            if not session_part.startswith("session") or not story_part.startswith("story"):
+                continue
+            if not (folder / "events.csv").exists():
+                continue
+            if not any(folder.glob("meg-sr*-raw.fif")):
+                continue
+            yield cls(
+                subject_uid=subject_uid,
+                session=session_part[len("session"):],
+                story=story_part[len("story"):])
+
+    @classmethod
     def download(cls) -> None:
         download_osf('ag3kj', StudyPaths().download.parent, 'ag3kj')
         download_osf('h2tzn', StudyPaths().download.parent, 'h2tzn')
@@ -59,8 +86,21 @@ class Gwilliams2022Recording(api.Recording):
     @classmethod
     def iter(cls) -> tp.Iterator["Gwilliams2022Recording"]:  # type: ignore
         """Returns a generator of all recordings"""
+        cached = list(cls._iter_cached())
+        try:
+            paths = StudyPaths()
+            subject_file = paths.download / "participants.tsv"
+        except (KeyError, RuntimeError):
+            paths = None
+            subject_file = None
+        if subject_file is None or not subject_file.exists():
+            if cached:
+                yield from cached
+                return
+            paths = None
         # download, extract, organize
-        cls.download()
+        if paths is None:
+            cls.download()
         # List all recordings: depends on study structure
         paths = StudyPaths()
         subject_file = paths.download / "participants.tsv"

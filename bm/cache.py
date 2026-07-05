@@ -23,6 +23,13 @@ from .utils import write_and_rename
 logger = logging.getLogger(__name__)
 
 
+def torch_load(*args, **kwargs):
+    try:
+        return torch.load(*args, weights_only=False, **kwargs)
+    except TypeError:
+        return torch.load(*args, **kwargs)
+
+
 def jsonable(value):
     if isinstance(value, dict):
         lst = [(jsonable(k), jsonable(v)) for k, v in value.items()]
@@ -73,7 +80,7 @@ class Cache:
         if path is not None and path.exists():
             try:
                 if self._suffix == ".pkl":
-                    return torch.load(path)
+                    return torch_load(path)
                 else:
                     return np.lib.format.open_memmap(path)
             except OSError as error:

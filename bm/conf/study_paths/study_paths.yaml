@@ -1,7 +1,13 @@
-# specificy the data paths here
+# 各 study 原始数据/预处理数据的本机路径。
+# 代码会先按主机名查找专用配置；找不到时使用 default。
+
 default:
-  gwilliams2022: ./data/gwilliams2022/
-  schoffelen2019: ./data/schoffelen2019/
-  brennan2019: ./data/brennan2019/
-  broderick2019: ./data/broderick2019/
-# Add more hostnames below
+  gwilliams2022: ./data/gwilliams2022/     # Gwilliams2022 数据目录。
+  schoffelen2019: ./data/schoffelen2019/   # Schoffelen2019 数据目录。
+  brennan2019: ./data/brennan2019/         # Brennan2019 数据目录。
+  broderick2019: ./data/broderick2019/     # Broderick2019 数据目录。
+
+# 如果不同机器的数据路径不同，可以在下面按主机名新增一组配置。
+# 示例：
+# DESKTOP-EXAMPLE:
+#   gwilliams2022: D:/datasets/gwilliams2022/

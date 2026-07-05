@@ -1,83 +1,98 @@
 # @package _global_
 
+# 默认使用 SimpleConv。具体实验可以通过 model=convrnn、model=clip_conv 等模板覆盖。
 model_name: simpleconv
 
+# ConvRNN 的通用默认参数；只有 model_name=convrnn 时才会真正使用。
 convrnn:
-  # Overall
-  concatenate: false
-  depth: 2
-  linear_out: false
-  complex_out: false
-  # Conv structure
-  kernel_size: 4
-  stride: 2
-  growth: 1.
-  # LSTM settings
-  lstm: 4  # number of lstm layers
-  bidirectional_lstm: false
-  flip_lstm: false
-  # Attention
-  attention: 0
-  heads: 4
-  # Dropouts and BN and activations
-  conv_dropout: 0.0
-  lstm_dropout: 0.0
-  dropout_input: 0.0
-  batch_norm: false
-  relu_leakiness: 0.0
-  # Subject specific settings
-  subject_dim: 64
-  embedding_location: [lstm]
-  embedding_scale: 1.0
-  subject_layers: false
-  subject_layers_dim: input  # input or hidden
+  # 整体网络结构。
+  concatenate: false                 # 是否把多路输入拼接后再送入模型。
+  depth: 2                           # 卷积层数。
+  linear_out: false                  # 输出端是否加线性层。
+  complex_out: false                 # 是否输出复数形式的表示。
 
+  # 卷积前端结构。
+  kernel_size: 4                     # 卷积核大小。
+  stride: 2                          # 卷积步幅。
+  growth: 1.                         # 每层通道数增长倍率。
+
+  # LSTM 时序建模配置。
+  lstm: 4                            # LSTM 层数。
+  bidirectional_lstm: false          # 是否使用双向 LSTM。
+  flip_lstm: false                   # 是否反转时间方向后送入 LSTM。
+
+  # 注意力模块配置。
+  attention: 0                       # 注意力层数量；0 表示关闭。
+  heads: 4                           # 多头注意力的 head 数。
+
+  # Dropout、归一化和激活函数配置。
+  conv_dropout: 0.0                  # 卷积层 dropout。
+  lstm_dropout: 0.0                  # LSTM dropout。
+  dropout_input: 0.0                 # 输入 dropout。
+  batch_norm: false                  # 是否使用 batch normalization。
+  relu_leakiness: 0.0                # LeakyReLU 的负半轴斜率；0 等价于普通 ReLU。
+
+  # 受试者相关嵌入，用于让模型区分不同 subject。
+  subject_dim: 64                    # subject embedding 维度。
+  embedding_location: [lstm]         # subject embedding 注入的位置。
+  embedding_scale: 1.0               # subject embedding 缩放系数。
+  subject_layers: false              # 是否使用 subject-specific 层。
+  subject_layers_dim: input          # subject-specific 层作用在 input 或 hidden 维度。
+
+# SimpleConv 的通用默认参数；CLIP 主实验通常在 clip_conv.yaml 中覆盖其中一部分。
 simpleconv:
-  # Overall
-  concatenate: false
-  depth: 4
-  linear_out: false
-  complex_out: false
-  # Conv layer
-  kernel_size: 5
-  dilation_growth: 2
-  dilation_period:
-  skip: false
-  post_skip: false
-  growth: 1.
-  scale:  # if not none, layer scale init value
-  rewrite: false  # 1x1 conv layer in residual branch
-  groups: 1
-  glu: 0
-  glu_context: 0
-  glu_glu: true
-  gelu: false
-  # Dual path
-  dual_path: 0
-  # Dropouts and BN and activations
-  conv_dropout: 0.0
-  dropout_input: 0.0
-  batch_norm: false
-  relu_leakiness: 0.0
-  # Subject specific settings
-  subject_dim: 64
-  subject_layers: false
-  embedding_scale: 1.0
-  subject_layers_dim: input  # input or hidden
-  subject_layers_id: false  # init to identity subject layer
-  # stft transform
-  n_fft:
-  fft_complex: true
-  # merger
-  merger: false
-  merger_pos_dim: 256
-  merger_channels: 270
-  merger_dropout: 0.2
-  merger_penalty: 0.
-  merger_per_subject: false
-  dropout: 0.  # traditional dropout for comparison
-  dropout_rescale: true
-  initial_linear: 0  # initial linear for comparison
-  initial_depth: 1
-  initial_nonlin: false
+  # 整体网络结构。
+  concatenate: false                 # 是否拼接多路输入。
+  depth: 4                           # 残差卷积块数量。
+  linear_out: false                  # 输出端是否加线性层。
+  complex_out: false                 # 是否输出复数形式的表示。
 
+  # 卷积层配置。
+  kernel_size: 5                     # 卷积核大小。
+  dilation_growth: 2                 # 空洞卷积 dilation 的增长倍率。
+  dilation_period:                   # dilation 周期；留空表示不强制周期重置。
+  skip: false                        # 是否使用 skip connection。
+  post_skip: false                   # 是否在 skip 之后再做额外处理。
+  growth: 1.                         # 通道数增长倍率。
+  scale:                             # 残差分支 layer scale 初值；留空表示不用。
+  rewrite: false                     # 是否在残差分支使用 1x1 卷积重写通道。
+  groups: 1                          # 分组卷积的组数。
+  glu: 0                             # GLU 层数量；0 表示关闭。
+  glu_context: 0                     # GLU 使用的上下文大小。
+  glu_glu: true                      # GLU 门控分支是否也使用 GLU 形式。
+  gelu: false                        # 是否使用 GELU 激活。
+
+  # Dual-path 配置。
+  dual_path: 0                       # dual-path 块数量；0 表示关闭。
+
+  # Dropout、归一化和激活函数配置。
+  conv_dropout: 0.0                  # 卷积层 dropout。
+  dropout_input: 0.0                 # 输入 dropout。
+  batch_norm: false                  # 是否使用 batch normalization。
+  relu_leakiness: 0.0                # LeakyReLU 的负半轴斜率。
+
+  # 受试者相关参数。
+  subject_dim: 64                    # subject embedding 维度。
+  subject_layers: false              # 是否使用 subject-specific 层。
+  embedding_scale: 1.0               # subject embedding 缩放系数。
+  subject_layers_dim: input          # subject-specific 层作用在 input 或 hidden 维度。
+  subject_layers_id: false           # 是否把 subject-specific 层初始化成近似恒等映射。
+
+  # 可选 STFT 变换配置。
+  n_fft:                             # STFT 的 FFT 点数；留空表示不用 STFT。
+  fft_complex: true                  # STFT 输出是否保留复数形式。
+
+  # 传感器位置 merger 配置，用于把不同设备/subject 的通道对齐到统一表示。
+  merger: false                      # 是否启用 merger。
+  merger_pos_dim: 256                # 传感器位置编码维度。
+  merger_channels: 270               # merger 输出通道数。
+  merger_dropout: 0.2                # merger 内部 dropout。
+  merger_penalty: 0.                 # merger 正则惩罚强度。
+  merger_per_subject: false          # 是否为每个 subject 单独学习 merger。
+
+  # 其他对照实验常用参数。
+  dropout: 0.                        # 传统 dropout 强度。
+  dropout_rescale: true              # dropout 后是否按保留比例重缩放。
+  initial_linear: 0                  # 输入端初始线性投影维度；0 表示关闭。
+  initial_depth: 1                   # 初始投影块深度。
+  initial_nonlin: false              # 初始投影后是否加非线性。

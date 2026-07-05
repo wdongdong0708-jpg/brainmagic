@@ -1,3 +1,4 @@
 # @package _global_
 
+# 不使用额外的特征模型，模型输出会直接和 dset.features 中的目标特征对齐。
 feature_model_name:
